@@ -45,7 +45,7 @@ export function sine_cos_wave_plane() {
 
     dirLight.shadow.camera.lookAt(0, 0, -30);
     scene.add(dirLight);
-    // scene.add(new THREE.CameraHelper(dirLight.shadow.camera));
+    scene.add(new THREE.CameraHelper(dirLight.shadow.camera));
 
     const geometry = new THREE.PlaneBufferGeometry(30, 30, 200, 200);
     const plane = new THREE.Mesh(geometry, new THREE.MeshPhongMaterial({ color: 0xf2a23a }));
@@ -55,10 +55,8 @@ export function sine_cos_wave_plane() {
     plane.position.z = - 30;
     scene.add(plane);
 
-    const vector3 = new THREE.Vector3();
     const count: number = geometry.attributes.position.count;
     const position = (geometry.attributes.position.array as Float32Array);
-    const normals = (geometry.attributes.normal.array as Float32Array);
 
     // ANIMATE
     function animate() {
@@ -75,30 +73,8 @@ export function sine_cos_wave_plane() {
             const ycos = Math.cos(yangle)
 
             position[i * 3 + 2] = xsin + ycos
-
-            vector3.x = normals[i * 3]
-            vector3.y = normals[i * 3 + 1]
-            vector3.z = normals[i * 3 + 2]
-
-            const tsx = 1 / Math.sqrt(1 + Math.pow(Math.cos(xangle), 2))
-            const tsy = Math.cos(xangle) / Math.sqrt(1 + Math.pow(Math.cos(xangle), 2))
-
-            const tcx = 1 / Math.sqrt(1 + Math.pow(Math.sin(yangle), 2))
-            const tcy = Math.sin(yangle) / Math.sqrt(1 + Math.pow(Math.sin(yangle), 2))
-
-            vector3.x = tsx
-            vector3.y = 0
-            vector3.z = -tsy
-
-            vector3.y = tcx
-            vector3.z += tcy
-
-            vector3.normalize()
-
-            normals[i * 3] = vector3.x
-            normals[i * 3 + 1] = vector3.y
-            normals[i * 3 + 2] = vector3.z
         }
+        geometry.computeVertexNormals()
         geometry.attributes.position.needsUpdate = true;
         geometry.attributes.normal.needsUpdate = true;
 

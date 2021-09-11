@@ -75,7 +75,6 @@ export function sine_cos_slime_wave_plane() {
     const count: number = geometry.attributes.position.count;
     const damping = 0.75;
     const position = (geometry.attributes.position.array as Float32Array);
-    const normals = (geometry.attributes.normal.array as Float32Array);
 
     // ANIMATE
     function animate() {
@@ -92,30 +91,8 @@ export function sine_cos_slime_wave_plane() {
             const ycos = Math.cos(yangle) * damping
 
             position[i * 3 + 2] = xsin + ycos
-
-            vector3.x = normals[i * 3]
-            vector3.y = normals[i * 3 + 1]
-            vector3.z = normals[i * 3 + 2]
-
-            const tsx = 1 / Math.sqrt(1 + Math.pow(Math.cos(xangle) * damping, 2))
-            const tsy = Math.cos(xangle) * damping / Math.sqrt(1 + Math.pow(Math.cos(xangle) * damping, 2))
-
-            const tcx = 1 / Math.sqrt(1 + Math.pow(Math.sin(yangle) * damping, 2))
-            const tcy = Math.sin(yangle) * damping / Math.sqrt(1 + Math.pow(Math.sin(yangle) * damping, 2))
-
-            vector3.x = tsx
-            vector3.y = 0
-            vector3.z = -tsy
-
-            vector3.y = tcx
-            vector3.z += tcy
-
-            vector3.normalize()
-
-            normals[i * 3] = vector3.x
-            normals[i * 3 + 1] = vector3.y
-            normals[i * 3 + 2] = vector3.z
         }
+        geometry.computeVertexNormals();
         geometry.attributes.position.needsUpdate = true;
         geometry.attributes.normal.needsUpdate = true;
 

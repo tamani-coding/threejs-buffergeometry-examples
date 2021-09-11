@@ -45,7 +45,7 @@ export function sine_cos_water_wave_plane() {
 
     dirLight.shadow.camera.lookAt(0, 0, -30);
     scene.add(dirLight);
-    // scene.add(new THREE.CameraHelper(dirLight.shadow.camera));
+    scene.add(new THREE.CameraHelper(dirLight.shadow.camera));
 
 
     // TEXTURES
@@ -58,7 +58,9 @@ export function sine_cos_water_wave_plane() {
     const waterAmbientOcclusion = textureLoader.load("./textures/water/Water_002_OCC.jpg");
 
     // PLANE
-    const geometry = new THREE.PlaneBufferGeometry(30, 30, 200, 200);
+    const WIDTH = 30;
+    const HEIGHT = 30;
+    const geometry = new THREE.PlaneBufferGeometry(WIDTH, HEIGHT, 200, 200);
     const plane = new THREE.Mesh(geometry, 
         new THREE.MeshStandardMaterial({ 
             map: waterBaseColor, 
@@ -72,51 +74,27 @@ export function sine_cos_water_wave_plane() {
     plane.position.z = - 30;
     scene.add(plane);
 
-    const vector3 = new THREE.Vector3();
     const count: number = geometry.attributes.position.count;
     const damping = 0.25;
     const position = (geometry.attributes.position.array as Float32Array);
-    const normals = (geometry.attributes.normal.array as Float32Array);
-
+    const uvs = (geometry.attributes.uv.array as Float32Array);
     // ANIMATE
     function animate() {
 
         // SINE WAVE
-        const now = Date.now() / 400;
+        const now_slow = Date.now() / 400;
         for (let i = 0; i < count; i++) {
             const x = position[i * 3];
             const y = position[i * 3 + 1];
 
-            const xangle = x + now
+            const xangle = x + now_slow
             const xsin = Math.sin(xangle) * damping
-            const yangle = y + now
+            const yangle = y + now_slow
             const ycos = Math.cos(yangle) * damping
 
             position[i * 3 + 2] = xsin + ycos
-
-            vector3.x = normals[i * 3]
-            vector3.y = normals[i * 3 + 1]
-            vector3.z = normals[i * 3 + 2]
-
-            const tsx = 1 / Math.sqrt(1 + Math.pow(Math.cos(xangle) * damping, 2))
-            const tsy = Math.cos(xangle) * damping / Math.sqrt(1 + Math.pow(Math.cos(xangle) * damping, 2))
-
-            const tcx = 1 / Math.sqrt(1 + Math.pow(Math.sin(yangle) * damping, 2))
-            const tcy = Math.sin(yangle) * damping / Math.sqrt(1 + Math.pow(Math.sin(yangle) * damping, 2))
-
-            vector3.x = tsx
-            vector3.y = 0
-            vector3.z = -tsy
-
-            vector3.y = tcx
-            vector3.z += tcy
-
-            vector3.normalize()
-
-            normals[i * 3] = vector3.x
-            normals[i * 3 + 1] = vector3.y
-            normals[i * 3 + 2] = vector3.z
         }
+        geometry.computeVertexNormals();
         geometry.attributes.position.needsUpdate = true;
         geometry.attributes.normal.needsUpdate = true;
 

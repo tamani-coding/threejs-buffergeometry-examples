@@ -57,7 +57,6 @@ export function sine_wave_plane() {
 
     const count: number = geometry.attributes.position.count;
     const position = (geometry.attributes.position.array as Float32Array);
-    const normals = (geometry.attributes.normal.array as Float32Array);
 
     // ANIMATE
     function animate() {
@@ -71,14 +70,8 @@ export function sine_wave_plane() {
             const xangle = x + now
             const xsin = Math.sin(xangle)
             position[i * 3 + 2] = xsin
-
-            // TANGENT NORMAL VECTOR
-            const tx = 1 / Math.sqrt(1 + Math.pow(Math.cos(xangle), 2))
-            const ty = Math.cos(xangle) / Math.sqrt(1 + Math.pow(Math.cos(xangle), 2))
-            normals[i * 3] = tx
-            normals[i * 3 + 1] = 0
-            normals[i * 3 + 2] = -ty
         }
+        geometry.computeVertexNormals();
         geometry.attributes.position.needsUpdate = true;
         geometry.attributes.normal.needsUpdate = true;
 

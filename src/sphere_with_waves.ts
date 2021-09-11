@@ -58,7 +58,7 @@ export function sphere_with_waves() {
     const waterAmbientOcclusion = textureLoader.load("./textures/water/Water_002_OCC.jpg");
 
     // PLANE
-    const geometry = new THREE.SphereBufferGeometry(6, 150, 150);
+    const geometry = new THREE.SphereBufferGeometry(6, 128, 128);
     const sphere = new THREE.Mesh(geometry,
         new THREE.MeshStandardMaterial({
             map: waterBaseColor,
@@ -114,35 +114,8 @@ export function sphere_with_waves() {
             position[ix] = position_clone[ix] + nX * (xsin + ycos);
             position[iy] = position_clone[iy] + nY * (xsin + ycos);
             position[iz] = position_clone[iz] + nZ * (xsin + ycos);
-
-            // calculate normal vector of wave slopes
-            const tsx = 1 / Math.sqrt(1 + Math.pow(Math.cos(xangle) * damping, 2))
-            const tsy = Math.cos(xangle) * damping / Math.sqrt(1 + Math.pow(Math.cos(xangle) * damping, 2))
-            const tcx = 1 / Math.sqrt(1 + Math.pow(Math.sin(yangle) * damping, 2))
-            const tcy = Math.sin(yangle) * damping / Math.sqrt(1 + Math.pow(Math.sin(yangle) * damping, 2))
-
-            // store normal vector in 3d vector 
-            vector3.x = tsx
-            vector3.y = 0
-            vector3.z = -tsy
-            vector3.y = tcx
-            vector3.z += -tcy
-            vector3.normalize()
-
-            // create quarternion from wave normal vector
-            quaternion.setFromAxisAngle(vector3, Math.PI * 2)
-
-            // apply quarternion on original nromal vector
-            vector3.x = normals_clone[ix]
-            vector3.y = normals_clone[iy]
-            vector3.z = normals_clone[iz]
-            vector3.applyQuaternion(quaternion)
-
-            // set new normal vector
-            normals[ix] = vector3.x
-            normals[iy] = vector3.y
-            normals[iz] = vector3.z
         }
+        geometry.computeVertexNormals();
         geometry.attributes.position.needsUpdate = true;
         geometry.attributes.normal.needsUpdate = true;
 
