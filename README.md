@@ -3,6 +3,8 @@ threejs-buffergeometry-examples
 
 `npm install` and `npm run start`
 
+Go to index.ts and uncomment the example which you want to run.
+
 ## textures
 
 https://freepbr.com/c/organic/
