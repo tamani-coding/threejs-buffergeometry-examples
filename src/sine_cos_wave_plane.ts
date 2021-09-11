@@ -1,7 +1,7 @@
 import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 
-export function sine_wave_plane() {
+export function sine_cos_wave_plane() {
     // SCENE
     const scene = new THREE.Scene();
     scene.background = new THREE.Color(0xa8def0);
@@ -39,13 +39,13 @@ export function sine_wave_plane() {
     dirLight.position.z = -30;
 
     let target = new THREE.Object3D();
-    target.position.z = -30;
+    target.position.z = -20;
     dirLight.target = target;
     dirLight.target.updateMatrixWorld();
 
     dirLight.shadow.camera.lookAt(0, 0, -30);
     scene.add(dirLight);
-    // scene.add( new THREE.CameraHelper( dirLight.shadow.camera ) );
+    // scene.add(new THREE.CameraHelper(dirLight.shadow.camera));
 
     const geometry = new THREE.PlaneBufferGeometry(30, 30, 200, 200);
     const plane = new THREE.Mesh(geometry, new THREE.MeshPhongMaterial({ color: 0xf2a23a }));
@@ -55,6 +55,7 @@ export function sine_wave_plane() {
     plane.position.z = - 30;
     scene.add(plane);
 
+    const vector3 = new THREE.Vector3();
     const count: number = geometry.attributes.position.count;
 
     // ANIMATE
@@ -66,18 +67,37 @@ export function sine_wave_plane() {
         const normals = (geometry.attributes.normal.array as Float32Array);
         for (let i = 0; i < count; i++) {
             const x = position[i * 3];
+            const y = position[i * 3 + 1];
 
-            // SINE WAVE
             const xangle = x + now
             const xsin = Math.sin(xangle)
-            position[i * 3 + 2] = xsin
+            const yangle = y + now
+            const ycos = Math.cos(yangle)
 
-            // TANGENT NORMAL VECTOR
-            const tx = 1 / Math.sqrt(1 + Math.pow(Math.cos(xangle), 2))
-            const ty = Math.cos(xangle) / Math.sqrt(1 + Math.pow(Math.cos(xangle), 2))
-            normals[i * 3] = tx
-            normals[i * 3 + 1] = 0
-            normals[i * 3 + 2] = -ty
+            position[i * 3 + 2] = xsin + ycos
+
+            vector3.x = normals[i * 3]
+            vector3.y = normals[i * 3 + 1]
+            vector3.z = normals[i * 3 + 2]
+
+            const tsx = 1 / Math.sqrt(1 + Math.pow(Math.cos(xangle), 2))
+            const tsy = Math.cos(xangle) / Math.sqrt(1 + Math.pow(Math.cos(xangle), 2))
+
+            const tcx = 1 / Math.sqrt(1 + Math.pow(Math.sin(yangle), 2))
+            const tcy = Math.sin(yangle) / Math.sqrt(1 + Math.pow(Math.sin(yangle), 2))
+
+            vector3.x = tsx
+            vector3.y = 0
+            vector3.z = -tsy
+
+            vector3.y = tcx
+            vector3.z += tcy
+
+            vector3.normalize()
+
+            normals[i * 3] = vector3.x
+            normals[i * 3 + 1] = vector3.y
+            normals[i * 3 + 2] = vector3.z
         }
         geometry.attributes.position.needsUpdate = true;
         geometry.attributes.normal.needsUpdate = true;
