@@ -53,7 +53,7 @@ export function sine_cos_water_wave_plane() {
 
     const waterBaseColor = textureLoader.load("./textures/water/Water_002_COLOR.jpg");
     const waterNormalMap = textureLoader.load("./textures/water/Water_002_NORM.jpg");
-    const waterHeightMap = textureLoader.load("./textures/water/Water_002_DISP.jpg");
+    const waterHeightMap = textureLoader.load("./textures/water/Water_002_DISP.png");
     const waterRoughness = textureLoader.load("./textures/water/Water_002_ROUGH.jpg");
     const waterAmbientOcclusion = textureLoader.load("./textures/water/Water_002_OCC.jpg");
 
@@ -75,14 +75,14 @@ export function sine_cos_water_wave_plane() {
     const vector3 = new THREE.Vector3();
     const count: number = geometry.attributes.position.count;
     const damping = 0.25;
+    const position = (geometry.attributes.position.array as Float32Array);
+    const normals = (geometry.attributes.normal.array as Float32Array);
 
     // ANIMATE
     function animate() {
 
         // SINE WAVE
         const now = Date.now() / 400;
-        const position = (geometry.attributes.position.array as Float32Array);
-        const normals = (geometry.attributes.normal.array as Float32Array);
         for (let i = 0; i < count; i++) {
             const x = position[i * 3];
             const y = position[i * 3 + 1];

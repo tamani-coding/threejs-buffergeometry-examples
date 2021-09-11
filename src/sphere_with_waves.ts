@@ -1,7 +1,7 @@
 import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 
-export function sine_cos_wave_plane() {
+export function sphere_with_waves() {
     // SCENE
     const scene = new THREE.Scene();
     scene.background = new THREE.Color(0xa8def0);
@@ -47,57 +47,66 @@ export function sine_cos_wave_plane() {
     scene.add(dirLight);
     // scene.add(new THREE.CameraHelper(dirLight.shadow.camera));
 
-    const geometry = new THREE.PlaneBufferGeometry(30, 30, 200, 200);
-    const plane = new THREE.Mesh(geometry, new THREE.MeshPhongMaterial({ color: 0xf2a23a }));
-    plane.receiveShadow = true;
-    plane.castShadow = true;
-    plane.rotation.x = - Math.PI / 2;
-    plane.position.z = - 30;
-    scene.add(plane);
 
-    const vector3 = new THREE.Vector3();
+    // TEXTURES
+    const textureLoader = new THREE.TextureLoader();
+
+    const waterBaseColor = textureLoader.load("./textures/water/Water_002_COLOR.jpg");
+    const waterNormalMap = textureLoader.load("./textures/water/Water_002_NORM.jpg");
+    const waterHeightMap = textureLoader.load("./textures/water/Water_002_DISP.png");
+    const waterRoughness = textureLoader.load("./textures/water/Water_002_ROUGH.jpg");
+    const waterAmbientOcclusion = textureLoader.load("./textures/water/Water_002_OCC.jpg");
+
+    // PLANE
+    const geometry = new THREE.SphereBufferGeometry(6, 64, 64);
+    const sphere = new THREE.Mesh(geometry,
+        new THREE.MeshStandardMaterial({
+            map: waterBaseColor,
+            normalMap: waterNormalMap,
+            displacementMap: waterHeightMap, displacementScale: 0.01,
+            roughnessMap: waterRoughness, roughness: 0,
+            aoMap: waterAmbientOcclusion
+        }));
+    sphere.receiveShadow = true;
+    sphere.castShadow = true;
+    sphere.rotation.x = - Math.PI / 2;
+    sphere.position.z = - 30;
+    scene.add(sphere);
+
     const count: number = geometry.attributes.position.count;
+    
     const position = (geometry.attributes.position.array as Float32Array);
     const normals = (geometry.attributes.normal.array as Float32Array);
+    const position_clone = JSON.parse(JSON.stringify(position)) as Float32Array;
+    const normals_clone = JSON.parse(JSON.stringify(normals)) as Float32Array;
+    const uvs = (geometry.attributes.uv.array as Float32Array);
+    const damping = 0.2;
 
     // ANIMATE
     function animate() {
 
-        // SINE WAVE
-        const now = Date.now() / 300;
+        // WAVES
+        const now = Date.now() / 200;
         for (let i = 0; i < count; i++) {
-            const x = position[i * 3];
-            const y = position[i * 3 + 1];
+            const ix = i * 3
+            const iy = i * 3 + 1
+            const iz = i * 3 + 2
 
-            const xangle = x + now
-            const xsin = Math.sin(xangle)
-            const yangle = y + now
-            const ycos = Math.cos(yangle)
+            const nX = normals_clone[ix];
+            const nY = normals_clone[iy];
+            const nZ = normals_clone[iz];
 
-            position[i * 3 + 2] = xsin + ycos
+            const uX = uvs[i * 2] * Math.PI * 16
+            const uY = uvs[i * 2 + 1]  * Math.PI * 16
 
-            vector3.x = normals[i * 3]
-            vector3.y = normals[i * 3 + 1]
-            vector3.z = normals[i * 3 + 2]
+            const xangle = (uX + now)
+            const xsin = Math.sin(xangle) * damping
+            const yangle = (uY + now)
+            const ycos = Math.cos(yangle) * damping
 
-            const tsx = 1 / Math.sqrt(1 + Math.pow(Math.cos(xangle), 2))
-            const tsy = Math.cos(xangle) / Math.sqrt(1 + Math.pow(Math.cos(xangle), 2))
-
-            const tcx = 1 / Math.sqrt(1 + Math.pow(Math.sin(yangle), 2))
-            const tcy = Math.sin(yangle) / Math.sqrt(1 + Math.pow(Math.sin(yangle), 2))
-
-            vector3.x = tsx
-            vector3.y = 0
-            vector3.z = -tsy
-
-            vector3.y = tcx
-            vector3.z += tcy
-
-            vector3.normalize()
-
-            normals[i * 3] = vector3.x
-            normals[i * 3 + 1] = vector3.y
-            normals[i * 3 + 2] = vector3.z
+            position[ix] = position_clone[ix] + nX * (xsin + ycos);
+            position[iy] = position_clone[iy] + nY * (xsin + ycos);
+            position[iz] = position_clone[iz] + nZ * (xsin + ycos);
         }
         geometry.attributes.position.needsUpdate = true;
         geometry.attributes.normal.needsUpdate = true;

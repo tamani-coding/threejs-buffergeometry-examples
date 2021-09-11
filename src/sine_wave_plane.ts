@@ -56,14 +56,14 @@ export function sine_wave_plane() {
     scene.add(plane);
 
     const count: number = geometry.attributes.position.count;
+    const position = (geometry.attributes.position.array as Float32Array);
+    const normals = (geometry.attributes.normal.array as Float32Array);
 
     // ANIMATE
     function animate() {
 
         // SINE WAVE
         const now = Date.now() / 300;
-        const position = (geometry.attributes.position.array as Float32Array);
-        const normals = (geometry.attributes.normal.array as Float32Array);
         for (let i = 0; i < count; i++) {
             const x = position[i * 3];
 

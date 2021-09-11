@@ -74,14 +74,14 @@ export function sine_cos_slime_wave_plane() {
     const vector3 = new THREE.Vector3();
     const count: number = geometry.attributes.position.count;
     const damping = 0.75;
+    const position = (geometry.attributes.position.array as Float32Array);
+    const normals = (geometry.attributes.normal.array as Float32Array);
 
     // ANIMATE
     function animate() {
 
         // SINE WAVE
         const now = Date.now() / 400;
-        const position = (geometry.attributes.position.array as Float32Array);
-        const normals = (geometry.attributes.normal.array as Float32Array);
         for (let i = 0; i < count; i++) {
             const x = position[i * 3];
             const y = position[i * 3 + 1];
