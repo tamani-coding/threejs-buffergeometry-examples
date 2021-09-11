@@ -75,14 +75,9 @@ export function sphere_with_waves() {
 
     const count: number = geometry.attributes.position.count;
     
-    const position = (geometry.attributes.position.array as Float32Array);
-    const normals = (geometry.attributes.normal.array as Float32Array);
-    const position_clone = JSON.parse(JSON.stringify(position)) as Float32Array;
-    const normals_clone = JSON.parse(JSON.stringify(normals)) as Float32Array;
-    const uvs = (geometry.attributes.uv.array as Float32Array);
+    const position_clone = JSON.parse(JSON.stringify(geometry.attributes.position.array)) as Float32Array;
+    const normals_clone = JSON.parse(JSON.stringify(geometry.attributes.normal.array)) as Float32Array;
     const damping = 0.2;
-    const vector3 = new THREE.Vector3();
-    const quaternion = new THREE.Quaternion();
 
     // ANIMATE
     function animate() {
@@ -95,29 +90,23 @@ export function sphere_with_waves() {
             const iy = i * 3 + 1
             const iz = i * 3 + 2
 
-            // normal vector
-            const nX = normals_clone[ix];
-            const nY = normals_clone[iy];
-            const nZ = normals_clone[iz];
-
             // use uvs to calculate wave
-            const uX = uvs[i * 2] * Math.PI * 16
-            const uY = uvs[i * 2 + 1]  * Math.PI * 16
+            const uX = geometry.attributes.uv.getX(i) * Math.PI * 16
+            const uY = geometry.attributes.uv.getY(i) * Math.PI * 16
 
-            // calculate wave height
+            // calculate current vertex wave height
             const xangle = (uX + now)
             const xsin = Math.sin(xangle) * damping
             const yangle = (uY + now)
             const ycos = Math.cos(yangle) * damping
 
-            // apply wave height using original position & original normal vector
-            position[ix] = position_clone[ix] + nX * (xsin + ycos);
-            position[iy] = position_clone[iy] + nY * (xsin + ycos);
-            position[iz] = position_clone[iz] + nZ * (xsin + ycos);
+            // set new position
+            geometry.attributes.position.setX(i, position_clone[ix] + normals_clone[ix] * (xsin + ycos))
+            geometry.attributes.position.setY(i, position_clone[iy] + normals_clone[iy] * (xsin + ycos))
+            geometry.attributes.position.setZ(i, position_clone[iz] + normals_clone[iz] * (xsin + ycos))
         }
         geometry.computeVertexNormals();
         geometry.attributes.position.needsUpdate = true;
-        geometry.attributes.normal.needsUpdate = true;
 
         renderer.render(scene, camera);
         requestAnimationFrame(animate);
