@@ -94,7 +94,6 @@ export function sine_cos_water_wave_plane() {
         }
         geometry.computeVertexNormals();
         geometry.attributes.position.needsUpdate = true;
-        geometry.attributes.normal.needsUpdate = true;
 
         renderer.render(scene, camera);
         requestAnimationFrame(animate);
