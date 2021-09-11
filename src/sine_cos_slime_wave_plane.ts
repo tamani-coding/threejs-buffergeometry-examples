@@ -71,10 +71,8 @@ export function sine_cos_slime_wave_plane() {
     plane.position.z = - 30;
     scene.add(plane);
 
-    const vector3 = new THREE.Vector3();
     const count: number = geometry.attributes.position.count;
     const damping = 0.75;
-    const position = (geometry.attributes.position.array as Float32Array);
 
     // ANIMATE
     function animate() {
@@ -82,19 +80,18 @@ export function sine_cos_slime_wave_plane() {
         // SINE WAVE
         const now = Date.now() / 400;
         for (let i = 0; i < count; i++) {
-            const x = position[i * 3];
-            const y = position[i * 3 + 1];
+            const x = geometry.attributes.position.getX(i)
+            const y = geometry.attributes.position.getY(i)
 
             const xangle = x + now
             const xsin = Math.sin(xangle) * damping
             const yangle = y + now
             const ycos = Math.cos(yangle) * damping
 
-            position[i * 3 + 2] = xsin + ycos
+            geometry.attributes.position.setZ(i, xsin + ycos)
         }
         geometry.computeVertexNormals();
         geometry.attributes.position.needsUpdate = true;
-        geometry.attributes.normal.needsUpdate = true;
 
         renderer.render(scene, camera);
         requestAnimationFrame(animate);
