@@ -76,23 +76,21 @@ export function sine_cos_water_wave_plane() {
 
     const count: number = geometry.attributes.position.count;
     const damping = 0.25;
-    const position = (geometry.attributes.position.array as Float32Array);
-    const uvs = (geometry.attributes.uv.array as Float32Array);
     // ANIMATE
     function animate() {
 
         // SINE WAVE
         const now_slow = Date.now() / 400;
         for (let i = 0; i < count; i++) {
-            const x = position[i * 3];
-            const y = position[i * 3 + 1];
+            const x = geometry.attributes.position.getX(i)
+            const y = geometry.attributes.position.getY(i)
 
             const xangle = x + now_slow
             const xsin = Math.sin(xangle) * damping
             const yangle = y + now_slow
             const ycos = Math.cos(yangle) * damping
 
-            position[i * 3 + 2] = xsin + ycos
+            geometry.attributes.position.setZ(i, xsin + ycos)
         }
         geometry.computeVertexNormals();
         geometry.attributes.position.needsUpdate = true;

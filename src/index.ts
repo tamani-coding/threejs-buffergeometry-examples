@@ -6,6 +6,6 @@ import { sphere_with_waves } from "./sphere_with_waves";
 
 // sine_wave_plane();
 // sine_cos_wave_plane();
-sine_cos_slime_wave_plane();
-// sine_cos_water_wave_plane();
+// sine_cos_slime_wave_plane();
+sine_cos_water_wave_plane();
 // sphere_with_waves();
