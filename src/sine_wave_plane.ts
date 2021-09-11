@@ -55,7 +55,6 @@ plane.rotation.x = - Math.PI / 2;
 plane.position.z = - 30;
 scene.add(plane);
 
-const vector3 = new THREE.Vector3();
 const count: number  = geometry.attributes.position.count;
 
 // ANIMATE
@@ -67,34 +66,18 @@ function animate() {
     const normals = (geometry.attributes.normal.array as Float32Array);
     for (let i = 0; i < count; i++) {
         const x = position[i * 3];
-        const y = position[i * 3 + 1];
 
+        // SINE WAVE
         const xangle = x + now
         const xsin = Math.sin(xangle)
-        const yangle = y + now
-        const ysin = Math.sin(y + now)
-
         position[i * 3 + 2] = xsin
-        
-        vector3.x = normals[i * 3]
-        vector3.y = normals[i * 3 + 1]
-        vector3.z = normals[i * 3 + 2]
 
+        // TANGENT NORMAL VECTOR
         const tx = 1 / Math.sqrt(1 + Math.pow(Math.cos(xangle), 2))
         const ty = Math.cos(xangle) / Math.sqrt(1 + Math.pow(Math.cos(xangle), 2))
-        
-        // console.log(`${tx} - ${ty}`)
-
         normals[i * 3] = tx
         normals[i * 3 + 1] = 0
         normals[i * 3 + 2] = -ty
-
-        // vector3.applyAxisAngle(yaxis, xsin / Math.PI / Math.PI)
-        // vector3.applyAxisAngle(yaxis, yangle)
-
-        // normals[i * 3] = vector3.x
-        // normals[i * 3 + 1] = vector3.y
-        // normals[i * 3 + 2] = vector3.z
     }
     geometry.attributes.position.needsUpdate = true;
     geometry.attributes.normal.needsUpdate = true;
