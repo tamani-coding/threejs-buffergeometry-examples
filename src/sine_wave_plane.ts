@@ -56,7 +56,6 @@ export function sine_wave_plane() {
     scene.add(plane);
 
     const count: number = geometry.attributes.position.count;
-    const position = (geometry.attributes.position.array as Float32Array);
 
     // ANIMATE
     function animate() {
@@ -64,16 +63,15 @@ export function sine_wave_plane() {
         // SINE WAVE
         const now = Date.now() / 300;
         for (let i = 0; i < count; i++) {
-            const x = position[i * 3];
+            const x = geometry.attributes.position.getX(i);
 
             // SINE WAVE
             const xangle = x + now
             const xsin = Math.sin(xangle)
-            position[i * 3 + 2] = xsin
+            geometry.attributes.position.setZ(i, xsin);
         }
         geometry.computeVertexNormals();
         geometry.attributes.position.needsUpdate = true;
-        geometry.attributes.normal.needsUpdate = true;
 
         renderer.render(scene, camera);
         requestAnimationFrame(animate);
