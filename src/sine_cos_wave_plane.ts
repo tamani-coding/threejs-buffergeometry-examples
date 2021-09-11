@@ -45,7 +45,7 @@ export function sine_cos_wave_plane() {
 
     dirLight.shadow.camera.lookAt(0, 0, -30);
     scene.add(dirLight);
-    scene.add(new THREE.CameraHelper(dirLight.shadow.camera));
+    // scene.add(new THREE.CameraHelper(dirLight.shadow.camera));
 
     const geometry = new THREE.PlaneBufferGeometry(30, 30, 200, 200);
     const plane = new THREE.Mesh(geometry, new THREE.MeshPhongMaterial({ color: 0xf2a23a }));
