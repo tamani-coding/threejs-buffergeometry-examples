@@ -1,8 +1,10 @@
 # threejs-buffergeometry-examples
 threejs-buffergeometry-examples
 
-`npm install` and `npm run start`
-
+`npm install` and `npm run start`  
+  
+Try the [Stackblitz](https://stackblitz.com/github/tamani-coding/threejs-buffergeometry-examples)  
+  
 Go to index.ts and uncomment the example which you want to run.
 
 ## textures
